@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace FlatQubeCodeSnippet.Controllers
@@ -85,6 +87,11 @@ namespace FlatQubeCodeSnippet.Controllers
             }
         }
 
+        /// <summary>
+        /// Get currency data info by token root address.
+        /// </summary>
+        /// <param name="currency">Currency address</param>
+        /// <returns></returns>
         [HttpPost]
         [Route("Currencies")]
         public async Task<IActionResult> Currencies(string currency)
@@ -102,12 +109,38 @@ namespace FlatQubeCodeSnippet.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Get currencies prices by token root address.
+        /// </summary>
+        /// <param name="currency_addresses">Currency address taken from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("CurrenciesUsdtPrices")]
+        public async Task<IActionResult> CurrenciesUsdtPrices([FromBody]JsonElement currency_addresses)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(currency_addresses);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"currencies_usdt_prices");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         private string ConstructRightUrl(string environment, string apiPathSuffix)
         {
             return environment + "/" + apiPathSuffix;
         }
-
-
 
     }
 }
