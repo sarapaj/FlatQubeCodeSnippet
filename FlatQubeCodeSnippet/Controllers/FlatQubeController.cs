@@ -24,6 +24,8 @@ namespace FlatQubeCodeSnippet.Controllers
             return View();
         }
 
+        #region Cmc
+
         /// <summary>
         /// Get dex pools info.
         /// </summary>
@@ -86,7 +88,9 @@ namespace FlatQubeCodeSnippet.Controllers
                 return BadRequest();
             }
         }
+        #endregion
 
+        #region Currencies
         /// <summary>
         /// Get currency data info by token root address.
         /// </summary>
@@ -135,6 +139,211 @@ namespace FlatQubeCodeSnippet.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        #endregion
+
+        #region Pairs
+
+        /// <summary>
+        /// Get all Pairs data.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs")]
+        public async Task<IActionResult> Pairs([FromBody]JsonElement body)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PairModel>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get pair data info by lp address.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs/address/{address}")]
+        public async Task<IActionResult> PairsAddress_Address(string address)
+        {
+            try
+            {
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/address/{address}");
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(apiEndpoint, address);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PairModel>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get cross pairs data.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs/cross_pairs")]
+        public async Task<IActionResult> PairsCrossPairs([FromBody] JsonElement body)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/cross_pairs");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PairModel>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get pair data info by token root addresses. TODO
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs/left/{left}/right/{right}")]
+        public async Task<IActionResult> PairsLeftRight(string left, string right)
+        {
+            try
+            {
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/left/{left}/right/{right}");
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(apiEndpoint, new LeftRightPair { left = left, right = right});
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PairModel>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        /// <summary>
+        /// Get ohlcv pair data info by token root addresses.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs/left/{left}/right/{right}/ohlcv")]
+        public async Task<IActionResult> PairsLeftRight_Ohlcv(string left, string right, [FromBody] JsonElement body)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/left/{left}/right/{right}/ohlcv");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<PairOhlcvModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get ohlcv pair data info by lp address.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs/address/{address}/ohlcv")]
+        public async Task<IActionResult> PairsAddress_Ohlcv(string address, [FromBody] JsonElement body)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/address/{address}/ohlcv");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<PairOhlcvModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Get pair volume data info.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs/address/{address}/volume")]
+        public async Task<IActionResult> PairsAddress_Volume(string address, [FromBody] JsonElement body)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/address/{address}/volume");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<PairDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        /// <summary>
+        /// Get pair tvl data info.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("pairs/address/{address}/tvl")]
+        public async Task<IActionResult> PairsAddress_Tvl(string address, [FromBody] JsonElement body)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/address/{address}/tvl");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<PairDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        #endregion
+        public class LeftRightPair
+        {
+            public string left { get; set; }
+            public string right { get; set; }
         }
 
         private string ConstructRightUrl(string environment, string apiPathSuffix)
