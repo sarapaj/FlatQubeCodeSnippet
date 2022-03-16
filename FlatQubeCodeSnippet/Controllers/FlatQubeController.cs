@@ -31,7 +31,7 @@ namespace FlatQubeCodeSnippet.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("CmcDex")]
+        [Route("cmc/dex")]
         public async Task<IActionResult> CmcDex()
         {
             string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"cmc/dex");
@@ -63,7 +63,7 @@ namespace FlatQubeCodeSnippet.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("CmcFarming")]
+        [Route("cmc/farming")]
         public async Task<IActionResult> CmcFarming()
         {
             string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"cmc/farming");
@@ -97,7 +97,7 @@ namespace FlatQubeCodeSnippet.Controllers
         /// <param name="currency">Currency address</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("Currencies")]
+        [Route("currencies/{currency}")]
         public async Task<IActionResult> Currencies(string currency)
         {
             try
@@ -120,7 +120,7 @@ namespace FlatQubeCodeSnippet.Controllers
         /// <param name="currency_addresses">Currency address taken from body</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("CurrenciesUsdtPrices")]
+        [Route("currenciesUsdtPrices")]
         public async Task<IActionResult> CurrenciesUsdtPrices([FromBody]JsonElement currency_addresses)
         {
             try
@@ -140,6 +140,145 @@ namespace FlatQubeCodeSnippet.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Gets all data about currencies
+        /// </summary>
+        /// <param name="currency_addresses">Currency address along with additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("currencies")]
+        public async Task<IActionResult> AllCurrenciesData([FromBody] JsonElement currency_addresses)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(currency_addresses);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"currencies");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<CurrenciesDataModel>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gets currency prices data
+        /// </summary>
+        /// <param name="currencies">Currency address</param>
+        /// <param name="body_params">Additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("currencies/{currencies}/prices")]
+        public async Task<IActionResult> CurrencyPricesData(string currencies, [FromBody] JsonElement body_params)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body_params);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"currencies/{currencies}/prices");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<PricesDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gets currencies volume data
+        /// </summary>
+        /// <param name="currencies">Currency address</param>
+        /// <param name="body_params">Additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("currencies/{currencies}/volume")]
+        public async Task<IActionResult> CurrencyVolumeData(string currencies, [FromBody] JsonElement body_params)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body_params);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"currencies/{currencies}/volume");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<VolumeDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gets currencies tvl data
+        /// </summary>
+        /// <param name="currencies">Currency address</param>
+        /// <param name="body_params">Additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("currencies/{currencies}/tvl")]
+        public async Task<IActionResult> CurrencyTvlData(string currencies, [FromBody] JsonElement body_params)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body_params);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"currencies/{currencies}/tvl");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<VolumeDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        /// <summary>
+        /// Gets currencies fee data
+        /// </summary>
+        /// <param name="currencies">Currency address</param>
+        /// <param name="body_params">Additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("currencies/{currencies}/fee")]
+        public async Task<IActionResult> CurrencyFeeData(string currencies, [FromBody] JsonElement body_params)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body_params);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"currencies/{currencies}/fee");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<VolumeDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         #endregion
 
         #region Pairs
@@ -338,6 +477,92 @@ namespace FlatQubeCodeSnippet.Controllers
             }
         }
 
+        #endregion
+
+        #region Main
+        /// <summary>
+        /// Gets main volume data info.
+        /// </summary>
+        /// <param name="body_params">Additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("main/volume")]
+        public async Task<IActionResult> MainVolumeData([FromBody] JsonElement body_params)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body_params);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"main/volume");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<VolumeDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gets main tvl data info
+        /// </summary>
+        /// <param name="body_params">Additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("main/tvl")]
+        public async Task<IActionResult> MainTvlData([FromBody] JsonElement body_params)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body_params);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"main/tvl");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<VolumeDataModel>>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        #endregion
+
+        #region Transactions
+
+        /// <summary>
+        /// Gets Transactions data.
+        /// </summary>
+        /// <param name="body_params">Additional parameters derived from body</param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("transactions")]
+        public async Task<IActionResult> TransactionsData([FromBody] JsonElement body_params)
+        {
+            try
+            {
+                string json = System.Text.Json.JsonSerializer.Serialize(body_params);
+
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+                string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"transactions");
+                HttpResponseMessage response = await _httpClient.PostAsync(apiEndpoint, data);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<TransactionsDataModel>(jsonResponse);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
 
         private string ConstructRightUrl(string environment, string apiPathSuffix)
