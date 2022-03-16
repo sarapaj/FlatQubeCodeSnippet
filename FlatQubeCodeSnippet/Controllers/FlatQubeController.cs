@@ -217,7 +217,7 @@ namespace FlatQubeCodeSnippet.Controllers
         }
 
         /// <summary>
-        /// Get pair data info by token root addresses. TODO
+        /// Get pair data info by token root addresses. 
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -227,9 +227,9 @@ namespace FlatQubeCodeSnippet.Controllers
             try
             {
                 string apiEndpoint = ConstructRightUrl(_liveApiUrl, $"pairs/left/{left}/right/{right}");
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(apiEndpoint, new LeftRightPair { left = left, right = right});
+                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(apiEndpoint, left);
                 var jsonResponse = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<PairModel>(jsonResponse);
+                var result = JsonConvert.DeserializeObject<Pair>(jsonResponse);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -338,13 +338,7 @@ namespace FlatQubeCodeSnippet.Controllers
             }
         }
 
-
         #endregion
-        public class LeftRightPair
-        {
-            public string left { get; set; }
-            public string right { get; set; }
-        }
 
         private string ConstructRightUrl(string environment, string apiPathSuffix)
         {
